@@ -1,11 +1,8 @@
 # coding: utf-8
 
-# In[1]:
-
 
 import pandas as pd
 import matplotlib.pyplot as plt
-get_ipython().run_line_magic('matplotlib', 'inline')
 import re
 import string
 from nltk import word_tokenize
@@ -18,11 +15,12 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-review_data = pd.read_json('data/reviews_Musical_Instruments_5.json', lines=True)
+
+review_data = pd.read_json('../data/reviews_Musical_Instruments_5.json', lines=True)
 print(review_data[['reviewText', 'overall']].head())
 
-assert review_data.shape == tuple([10261, 9])
 
+assert review_data.shape == tuple([10261, 9])
 
 lemmatizer = WordNetLemmatizer()
 review_data['cleaned_review_text'] = review_data['reviewText'].apply(lambda x : ' '.join([lemmatizer.lemmatize(word.lower())     for word in word_tokenize(re.sub(r'([^\s\w]|_)+', ' ', str(x)))]))
@@ -47,11 +45,11 @@ print(review_data['target'].value_counts())
 assert sorted(review_data['target'].unique()) == [0,1]
 
 
-from sklearn.naive_bayes import GaussianNB
-nb = GaussianNB()
-nb.fit(tfidf_df,review_data['target'])
-predicted_labels = nb.predict(tfidf_df)
-print(nb.predict_proba(tfidf_df)[:,1])
+from sklearn.linear_model import LogisticRegression
+logreg = LogisticRegression()
+logreg.fit(tfidf_df,review_data['target'])
+predicted_labels = logreg.predict(tfidf_df)
+print(logreg.predict_proba(tfidf_df)[:,1])
 
 
 review_data['predicted_labels'] = predicted_labels
